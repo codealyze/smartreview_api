@@ -8,7 +8,7 @@ from smartreviewdata_app import OD
 from celery import current_task
 from smartreviewdata_app.SIGNATURE import match_query
 from smartreviewdata_app.DB_mysql import DB
-from smartreviewdata_app.utils import publish_message
+from smartreviewdata_app.utils import publish_message, make_blob_public
 import subprocess
 import fnmatch
 import numpy as np
@@ -18,8 +18,14 @@ import os
 logger = get_task_logger(__name__)
 
 @task(name="Fraud Detection")
-def main(threshold=15):
+def main(threshold=15, isBrowsed='false'):
     
+    if isBrowsed == 'true':
+        current_task.update_state(state='PROGRESS',
+                meta={'stage': 'Pulling Files'})
+        #subprocess.call("rm ~/.gsutil/credstore", shell=True)
+        subprocess.call("gsutil cp -c gs://ximistorage/testimages/* data/testimages/", shell=True)
+        
     current_task.update_state(state='PROGRESS',
                 meta={'stage': 'Object Detection'})
     publish_message('progress', 'Stage', 'Object Detection')
@@ -40,7 +46,7 @@ def main(threshold=15):
     
     #Init database here so that connection is never broken
     database = DB("root", "root", "srlogs")
-    sno = database.query('SELECT count(*) from {}'.format(database.table))[0][0]
+    sno = database.query('SELECT max(sno) from {}'.format(database.table))[0][0]
     
     from smartreviewdata_app import OCR
     ROWS = OCR.calculate_data(sno, 'data/imageparts', train_flag='False', source='images')
@@ -64,6 +70,8 @@ def main(threshold=15):
     logger.info("\nPushing imageparts to global_imageparts ...")
     subprocess.call("cp -r data/imageparts/* data/global_imageparts/", shell=True)
     subprocess.call("rm -r data/imageparts/*", shell=True)
+    subprocess.call("gsutil cp -r data/predictions/fraud gs://ximistorage/predictions/", shell=True)
+    subprocess.call("gsutil acl ch -u AllUsers:R gs://ximistorage/predictions/fraud/*", shell=True)
     
     publish_message('progress', 'Stage', 'Finished')
     #Clear testimages

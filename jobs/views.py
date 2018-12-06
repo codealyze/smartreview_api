@@ -25,11 +25,13 @@ def job_submit(request):
         data = json.loads(request.body.decode('utf-8'))
         
         threshold=int(data['threshold_value'])
+        isBrowsed = str(data['isBrowsed']).lower()
         print (threshold)
     except:
-        threshold = int(request.POST['threshold_value'])
-        
-    task = main.delay(threshold=threshold)
+        #threshold = int(request.POST['threshold_value'])
+        threshold = 10
+        isBrowsed = "false"
+    task = main.delay(threshold=threshold, isBrowsed=isBrowsed)
     TASK_ID = task.id
     
     return JsonResponse({"status": "Job Submitted"})

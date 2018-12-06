@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.http import JsonResponse
 from django.shortcuts import render
-from dummy_stats import data
+from dummy_stats import data, return_formatted_data
 # Create your views here.
 from system_stats import stats
 
@@ -13,7 +13,12 @@ def get_image_stats(request):
     try:
         image_name = request.GET['image_name']
         
-        return JsonResponse({'response': data[image_name]})
+        response = data(image_name)
+        return JsonResponse({'response': response})
+    except KeyError:
+        print ("From db")
+        response = return_formatted_data(image_name)
+        return JsonResponse({'response': response})
     except Exception, err:
         
         return JsonResponse({'response': str(err)}, safe=False)
