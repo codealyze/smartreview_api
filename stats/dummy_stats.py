@@ -16,7 +16,7 @@ data_struct = {"Date":	"",
 def get_stats_db(image_name):
     db = DB('root', 'root', 'srlogs')
     imageurl = 'images/{}'.format(image_name)
-    result = db.query("select * from srlogs where imageurl='images/{}' order by sno desc;".format(image_name))
+    result = db.query("select * from srlogs where imageurl='images/{}' order by sno desc limit 1;".format(image_name))
     if result==[]:
         return [[None for i in range(10)]]#raise ValueError("No such image file")
     return result
@@ -89,7 +89,7 @@ def data(image_name):
     "Rtn#":	"401042",
     "Acc#":	"323354781",
     "Check#":	"222291231231", 
-    "Fraud": False,
+    "Fraud": get_stats_db("20171202_132418.jpg")[0][9],
     "Comments": "",
 
      },

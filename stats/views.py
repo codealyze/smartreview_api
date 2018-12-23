@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from dummy_stats import data, return_formatted_data
 # Create your views here.
-from system_stats import stats
+from system_stats import all_stats
 
 def get_image_stats(request):
     """
@@ -25,4 +25,4 @@ def get_image_stats(request):
     
 def get_all(request):
     
-    return JsonResponse(stats)
+    return JsonResponse(all_stats())

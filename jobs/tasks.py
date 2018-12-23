@@ -20,12 +20,16 @@ logger = get_task_logger(__name__)
 @task(name="Fraud Detection")
 def main(threshold=15, isBrowsed='false'):
     
-    if isBrowsed == 'true':
-        current_task.update_state(state='PROGRESS',
+    current_task.update_state(state='PROGRESS',
                 meta={'stage': 'Pulling Files'})
-        #subprocess.call("rm ~/.gsutil/credstore", shell=True)
-        subprocess.call("gsutil cp -c gs://ximistorage/testimages/* data/testimages/", shell=True)
+    publish_message('progress', 'Stage', 'Pulling Files')
+    subprocess.call("rm -r data/testimages/*", shell=True)
+    if isBrowsed == 'true':
         
+        #subprocess.call("rm ~/.gsutil/credstore", shell=True)
+        subprocess.call("gsutil cp -c gs://ximistorage/testimages/browsed/* data/testimages/", shell=True)
+    
+    subprocess.call("gsutil cp -r gs://ximistorage/testimages/*.jpg data/testimages/", shell=True)
     current_task.update_state(state='PROGRESS',
                 meta={'stage': 'Object Detection'})
     publish_message('progress', 'Stage', 'Object Detection')
