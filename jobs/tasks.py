@@ -27,9 +27,9 @@ def main(threshold=15, isBrowsed='false'):
     if isBrowsed == 'true':
         
         #subprocess.call("rm ~/.gsutil/credstore", shell=True)
-        subprocess.call("gsutil cp -c gs://ximistorage/testimages/browsed/* data/testimages/", shell=True)
+        subprocess.call("gsutil cp -c gs://smartreview-backend/testimages/browsed/* data/testimages/", shell=True)
     
-    subprocess.call("gsutil cp -r gs://ximistorage/testimages/*.jpg data/testimages/", shell=True)
+    subprocess.call("gsutil cp -r gs://smartreview-backend/testimages/*.jpg data/testimages/", shell=True)
     current_task.update_state(state='PROGRESS',
                 meta={'stage': 'Object Detection'})
     publish_message('progress', 'Stage', 'Object Detection')
@@ -74,8 +74,8 @@ def main(threshold=15, isBrowsed='false'):
     logger.info("\nPushing imageparts to global_imageparts ...")
     subprocess.call("cp -r data/imageparts/* data/global_imageparts/", shell=True)
     subprocess.call("rm -r data/imageparts/*", shell=True)
-    subprocess.call("gsutil cp -r data/predictions/fraud gs://ximistorage/predictions/", shell=True)
-    subprocess.call("gsutil acl ch -u AllUsers:R gs://ximistorage/predictions/fraud/*", shell=True)
+    subprocess.call("gsutil cp -r data/predictions/fraud gs://smartreview-backend/predictions/", shell=True)
+    subprocess.call("gsutil acl ch -u AllUsers:R gs://smartreview-backendspredictions/fraud/*", shell=True)
     
     publish_message('progress', 'Stage', 'Finished')
     #Clear testimages
